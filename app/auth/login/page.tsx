@@ -1,15 +1,15 @@
 "use client"
 
 import type React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -27,12 +27,11 @@ export default function LoginPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
-        password,
-        options: {
-          emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || `${window.location.origin}/dashboard`,
-        },
+        password
       })
+
       if (error) throw error
+
       router.push("/dashboard")
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
@@ -47,7 +46,9 @@ export default function LoginPage() {
         <Card className="shadow-xl border-0">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-900">Welcome Back</CardTitle>
-            <CardDescription className="text-gray-600">Sign in to your FitTracker account</CardDescription>
+            <CardDescription className="text-gray-600">
+              Sign in to your FitTracker account
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
@@ -74,13 +75,22 @@ export default function LoginPage() {
                   className="h-11"
                 />
               </div>
+
               {error && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{error}</div>
+                <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                  {error}
+                </div>
               )}
-              <Button type="submit" className="w-full h-11 bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-blue-600 hover:bg-blue-700"
+                disabled={isLoading}
+              >
                 {isLoading ? "Signing in..." : "Sign In"}
               </Button>
             </form>
+
             <div className="mt-6 text-center text-sm text-gray-600">
               Don't have an account?{" "}
               <Link href="/auth/sign-up" className="font-medium text-blue-600 hover:text-blue-500">
